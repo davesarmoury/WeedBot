@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find ros_mscl)/launch/microstrain.launch">
+    <arg name="port" value="/dev/microstrain"/>    
+  </include>
+</launch>

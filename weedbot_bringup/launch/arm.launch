@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find kortex_driver)/launch/kortex_driver.launch">
+    <arg name="start_rviz" value="false"/>    
+  </include>
+
+  <include file="$(find kinova_vision)/launch/kinova_vision_color_only.launch" />
+</launch>
