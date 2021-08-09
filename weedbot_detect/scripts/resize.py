@@ -11,6 +11,8 @@ def callback(img):
     cv_image = cv_image[0:1080, 400:400+1080]
     cv_image = cv2.resize(cv_image, (416, 416))
     image_message = bridge.cv2_to_imgmsg(cv_image, encoding="rgb8")
+    image_message.header.stamp = rospy.Time.now()
+    image_message.header.frame_id = img.header.frame_id
     pub.publish(image_message)
 
 def adjust():

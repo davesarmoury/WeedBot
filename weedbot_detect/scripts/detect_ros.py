@@ -22,30 +22,10 @@ from models.experimental import attempt_load
 from utils.general import check_img_size, non_max_suppression, scale_coords, xyxy2xywh
 from utils.torch_utils import select_device, time_synchronized
 
-# Ported from ros_numpy.  Data order updated
-def image_to_numpy(msg):
-        if not msg.encoding in ros_numpy.image.name_to_dtypes:
-                raise TypeError('Unrecognized encoding {}'.format(msg.encoding))
-
-        dtype_class, channels = ros_numpy.image.name_to_dtypes[msg.encoding]
-        dtype = np.dtype(dtype_class)
-        dtype = dtype.newbyteorder('>' if msg.is_bigendian else '<')
-        shape = (channels, msg.width, msg.height)
-
-        data = np.fromstring(msg.data, dtype=dtype).reshape(shape)
-        data.strides = (
-                dtype.itemsize,
-                dtype.itemsize * channels,
-                msg.step
-        )
-
-        if channels == 1:
-                data = data[...,0]
-        return data
-
 def callback(data):
     global model, names, device, half, pub
-    img = image_to_numpy(data)
+    img = ros_numpy.image.image_to_numpy(data)
+    img = img.transpose((2, 0, 1))
     img = torch.from_numpy(img).to(device)
 
     det_msg = detection()
