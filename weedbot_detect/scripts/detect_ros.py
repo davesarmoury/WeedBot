@@ -15,6 +15,7 @@ import torch.backends.cudnn as cudnn
 from numpy import random
 
 import ros_numpy
+from weedbot_detect.msg import object, detection
 
 sys.path.insert(0, '../yolov5')
 from models.experimental import attempt_load
@@ -43,9 +44,13 @@ def image_to_numpy(msg):
         return data
 
 def callback(data):
-    global model, names, device, half
+    global model, names, device, half, pub
     img = image_to_numpy(data)
     img = torch.from_numpy(img).to(device)
+
+    det_msg = detection()
+    det_msg.frame_id = data.header.frame_id
+    det_msg.img_seq = data.header.seq
 
     img = img.half() if half else img.float()  # uint8 to fp16/32
     img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -60,31 +65,38 @@ def callback(data):
     pred = non_max_suppression(pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
     t2 = time_synchronized()
     s = ""
+
+    rospy.loginfo(str(s) + " Done. " + str(t2 - t1) + "s")
+    det_msg.inf_time = t2 - t1
+
     # Process detections
     for i, det in enumerate(pred):
         s += '%gx%g ' % img.shape[2:]  # print string
-        #gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
-        gn = 2.59615
         if len(det):
-            # Rescale boxes from img_size to im0 size
-            #det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
-
             # Print results
             for c in det[:, -1].unique():
                 n = (det[:, -1] == c).sum()  # detections per class
                 s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
-
+                rospy.loginfo("!!!" + str(s))
             # Write results
             for *xyxy, conf, cls in reversed(det):
-                xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                line = (cls, *xywh, conf) if opt.save_conf else (cls, *xywh)  # label format
-                rospy.loginfo(str(line))
+                obj_msg = object()
+                xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4))).view(-1).tolist()
+                rospy.logdebug("### <" + str(conf) + "> " + str(xyxy) + " - " + str(xywh))
+                obj_msg.x1 = xyxy[0]
+                obj_msg.y1 = xyxy[1]
+                obj_msg.x2 = xyxy[2]
+                obj_msg.y2 = xyxy[3]
+                obj_msg.width = xywh[2]
+                obj_msg.height = xywh[3]
+                obj_msg.confidence = conf
+                obj_msg.object_cls = cls
+                det_msg.objects.append(obj_msg)
 
-        # Print time (inference + NMS)
-        rospy.loginfo(str(s) + " Done. " + str(t2 - t1) + "s")
+    pub.publish(det_msg)
 
 def detect():
-    global model, names, bridge, device, half
+    global model, names, device, half, pub
     weights, imgsz = opt.weights, opt.img_size
 
     rospy.init_node('detector', anonymous=True)
@@ -109,6 +121,7 @@ def detect():
 
     rospy.loginfo("Done")
     rospy.Subscriber("/NEW", Image, callback)
+    pub = rospy.Publisher("/WEEDS", detection, queue_size=10)
     rospy.spin()
 
 if __name__ == '__main__':
@@ -132,3 +145,4 @@ if __name__ == '__main__':
 
     with torch.no_grad():
         detect()
+
