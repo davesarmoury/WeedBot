@@ -15,7 +15,7 @@ import torch.backends.cudnn as cudnn
 from numpy import random
 
 import ros_numpy
-from weedbot_detect.msg import object, detection
+from weedbot_msgs.msg import Object, Detection
 
 sys.path.insert(0, '../yolov5')
 from models.experimental import attempt_load
@@ -28,7 +28,7 @@ def callback(data):
     img = img.transpose((2, 0, 1))
     img = torch.from_numpy(img).to(device)
 
-    det_msg = detection()
+    det_msg = Detection()
     det_msg.frame_id = data.header.frame_id
     det_msg.img_seq = data.header.seq
 
@@ -60,7 +60,7 @@ def callback(data):
                 rospy.loginfo("!!!" + str(s))
             # Write results
             for *xyxy, conf, cls in reversed(det):
-                obj_msg = object()
+                obj_msg = Object()
                 xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4))).view(-1).tolist()
                 rospy.logdebug("### <" + str(conf) + "> " + str(xyxy) + " - " + str(xywh))
                 obj_msg.x1 = xyxy[0]
@@ -100,8 +100,8 @@ def detect():
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
 
     rospy.loginfo("Done")
-    rospy.Subscriber("/NEW", Image, callback)
-    pub = rospy.Publisher("/WEEDS", detection, queue_size=10)
+    rospy.Subscriber("/weeds/image_resized", Image, callback)
+    pub = rospy.Publisher("/weeds/detection/raw", detection, queue_size=10)
     rospy.spin()
 
 if __name__ == '__main__':
@@ -125,4 +125,3 @@ if __name__ == '__main__':
 
     with torch.no_grad():
         detect()
-

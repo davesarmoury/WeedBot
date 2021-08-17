@@ -22,7 +22,7 @@ def callback(msg):
 
 def motion_watcher():
     global STATUS
-    pub = rospy.Publisher('movement', String, queue_size=10)
+    pub = rospy.Publisher('/weeds/movement', String, queue_size=10)
     rospy.init_node('motion_watcher', anonymous=True)
 
     rospy.Subscriber("/gx5/nav/odom", Odometry, callback)
