@@ -15,7 +15,7 @@ def callback(msg):
   ay = abs(msg.twist.twist.angular.y)
   az = abs(msg.twist.twist.angular.z)
 
-  if max(lx, ly, lz, ax, ay, az) > 0.1:
+  if max(lx, ly, lz, ax, ay, az) > 0.2:
     STATUS = "MOVING"
   else:
     STATUS = "STANDING"

@@ -45,30 +45,32 @@ def move_callback(msg):
 
 def Control():
     global STATUS, HANDLED
-    rospy.init_node('weedbot_controller', anonymous=True)detection
+    rospy.init_node('weedbot_controller', anonymous=True)
     pub = rospy.Publisher('/weeds/detection/localized', String, queue_size=10)
     rospy.Subscriber("/weeds/movement", String, move_callback)
 
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         if STATUS == "STANDING" and HANDLED == False:
+            rospy.loginfo("CHECKING")
             HANDLED = True
 
             rospy.wait_for_service('/weeds/move_arm/named')
             named_arm_mover = rospy.ServiceProxy('/weeds/move_arm/named', NamedArmCommand)
             named_arm_mover("CAMERA")
 
-            weeds_detected = rospy.wait_for_message("/weeds/detection/raw", Detection)
-            if len(weeds_detected.objects) > 0:
-                weeds_localized = localize_weeds(weeds_detected)
-                named_arm_mover("FLAME ON")
-
-                rospy.wait_for_service('/weeds/move_arm/weeds')
-                weeds_arm_mover = rospy.ServiceProxy('/weeds/move_arm/weeds', PoseListArmCommand)
-                weeds_arm_mover(weeds_localized)
-                named_arm_mover("FLAME OFF")
+#            weeds_detected = rospy.wait_for_message("/weeds/detection/raw", Detection)
+#            if len(weeds_detected.objects) > 0:
+#                weeds_localized = localize_weeds(weeds_detected)
+#                named_arm_mover("FLAME ON")
+#
+#                rospy.wait_for_service('/weeds/move_arm/weeds')
+#                weeds_arm_mover = rospy.ServiceProxy('/weeds/move_arm/weeds', PoseListArmCommand)
+#                weeds_arm_mover(weeds_localized)
+#                named_arm_mover("FLAME OFF")
 
             named_arm_mover("STOW")
+            rospy.loginfo("DONE")
 
         rate.sleep()
 

@@ -4,6 +4,7 @@ project(weedbot_msgs)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   std_msgs
+  message_generation
 )
 
 add_message_files(
@@ -12,7 +13,6 @@ add_message_files(
    Detection.msg
 )
 
-## Generate services in the 'srv' folder
 add_service_files(
    FILES
    PoseListArmCommand.srv
@@ -28,7 +28,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES weedbot_msgs
-  CATKIN_DEPENDS geometry_msgs std_msgs
+   CATKIN_DEPENDS message_runtime geometry_msgs std_msgs
 #  DEPENDS system_lib
 )
 

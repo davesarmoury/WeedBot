@@ -3,5 +3,5 @@
     <arg name="start_rviz" value="false"/>    
   </include>
 
-  <include file="$(find kinova_vision)/launch/kinova_vision_color_only.launch" />
+  <include file="$(find weedbot_bringup)/launch/vision.launch" />
 </launch>
