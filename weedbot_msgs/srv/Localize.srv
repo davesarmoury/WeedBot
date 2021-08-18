@@ -1,3 +1,0 @@
-weedbot_msgs/Detection detection
----
-geometry_msgs/PoseArray positions
