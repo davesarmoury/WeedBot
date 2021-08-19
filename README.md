@@ -12,7 +12,7 @@ WIP WIP WIP
     cd ..
 
     git clone https://github.com/agilexrobotics/bunker_ros.git
-    git clone https://github.com/Kinovarobotics/ros_kortex.git
+    git clone https://github.com/DavesArmoury/ros_kortex.git
     git clone https://github.com/Kinovarobotics/ros_kortex_vision.git
     git clone https://github.com/agilexrobotics/ugv_sdk.git
     git clone https://github.com/LORD-MicroStrain/ROS-MSCL.git
