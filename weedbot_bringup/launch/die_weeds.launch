@@ -1,4 +1,5 @@
 <launch>
   <include file="$(find weedbot_bringup)/launch/arm.launch" />
   <include file="$(find weedbot_bringup)/launch/imu.launch" />
+  <include file="$(find weedbot_control)/launch/weedbot_control.launch" />
 </launch>

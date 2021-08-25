@@ -1,0 +1,5 @@
+<launch>
+    <node name="arm_controller" pkg="weedbot_control" type="arm_controller.py" output="screen" ns="my_gen3" />
+    <node name="motion_watcher" pkg="weedbot_control" type="motion_watcher.py" output="screen" />
+    <node name="weed_coordinator" pkg="weedbot_control" type="weed_coordinator.py" output="screen" />
+</launch>

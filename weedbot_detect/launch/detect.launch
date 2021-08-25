@@ -1,4 +1,4 @@
 <launch>
   <node name="adjuster" pkg="weedbot_detect" type="resize.py" output="screen" />
-
+  <node name="detector" pkg="weedbot_detect" type="detect_ros.py" output="screen" />
 </launch>

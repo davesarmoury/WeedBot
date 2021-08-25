@@ -22,7 +22,7 @@ def adjust():
     rospy.init_node('adjuster', anonymous=True)
 
     rospy.Subscriber("/camera/color/image_raw", Image, callback)
-    pub = rospy.Publisher('/weeds/image_resized', Image, queue_size=10)
+    pub = rospy.Publisher('/weeds/detection/image_resized', Image, queue_size=10)
     rospy.spin()
 
 if __name__ == '__main__':

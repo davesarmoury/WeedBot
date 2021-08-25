@@ -9,13 +9,9 @@ STATUS = "STARTING"
 def callback(msg):
   global STATUS
   lx = abs(msg.twist.twist.linear.x)
-  ly = abs(msg.twist.twist.linear.y)
-  lz = abs(msg.twist.twist.linear.z)
-  ax = abs(msg.twist.twist.angular.x)
-  ay = abs(msg.twist.twist.angular.y)
   az = abs(msg.twist.twist.angular.z)
 
-  if max(lx, ly, lz, ax, ay, az) > 0.2:
+  if max(lx, az) > 0.1:
     STATUS = "MOVING"
   else:
     STATUS = "STANDING"
@@ -29,7 +25,8 @@ def motion_watcher():
 
     rate = rospy.Rate(1)
     while not rospy.is_shutdown():
-        rospy.loginfo(STATUS)
+        if STATUS != "STANDING":
+          rospy.loginfo(STATUS)
         pub.publish(STATUS)
         rate.sleep()
 

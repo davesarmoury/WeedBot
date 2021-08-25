@@ -24,6 +24,9 @@ from utils.torch_utils import select_device, time_synchronized
 
 def callback(data):
     global model, names, device, half, pub
+
+    t1 = time_synchronized()
+
     img = ros_numpy.image.image_to_numpy(data)
     img = img.transpose((2, 0, 1))
     img = torch.from_numpy(img).to(device)
@@ -38,7 +41,6 @@ def callback(data):
         img = img.unsqueeze(0)
 
     # Inference
-    t1 = time_synchronized()
     pred = model(img, augment=opt.augment)[0]
 
     # Apply NMS
@@ -100,8 +102,8 @@ def detect():
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
 
     rospy.loginfo("Done")
-    rospy.Subscriber("/weeds/image_resized", Image, callback)
-    pub = rospy.Publisher("/weeds/detection/raw", detection, queue_size=10)
+    rospy.Subscriber("/weeds/detection/image_resized", Image, callback)
+    pub = rospy.Publisher("/weeds/detection/raw", Detection, queue_size=10)
     rospy.spin()
 
 if __name__ == '__main__':
