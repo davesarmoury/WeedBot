@@ -2,7 +2,7 @@
 
 Additional collateral from the Weed Killer video
 
-[<img src="https://img.youtube.com/vi/t7TLKLm5_10/0.jpg">](https://youtu.be/t7TLKLm5_10)
+[<img src="https://img.youtube.com/vi/fG6LRElZra0/0.jpg">](https://youtu.be/fG6LRElZra0)
 
 ## Install
 
